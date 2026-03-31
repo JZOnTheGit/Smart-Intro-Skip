@@ -24,47 +24,47 @@ So it works with **Seren, Fen, Umbrella, or your local library** as long as the 
 
 ## Installation
 
-### Why are there two zip files in `repo/`?
+### Why are there two zip files on GitHub?
 
-| File | What it is |
-|------|------------|
-| **`repository.smartintro.jz-1.0.0.zip`** | Small “repo installer” only. It tells Kodi where to fetch **`addons.xml`** and the addon. Install **this one first** if you want *Install from repository* → updates. |
-| **`plugin.video.introskip-1.0.1.zip`** | The **actual addon**. If you use the repo above, Kodi downloads this for you — you don’t need to grab it by hand. Only use this zip for a **direct install** (no repo). |
+They are **not** two copies of the same thing. Kodi treats them as **two different add-ons**:
 
-So: **repo path** = one small zip once, then pick the addon inside Kodi. **Direct path** = only the big addon zip.
+| Zip | Kodi add-on id | Role |
+|-----|----------------|------|
+| **`repository.smartintro.jz-1.0.0.zip`** | `repository.smartintro.jz` | **Repository only** — a tiny package that says “here is `addons.xml` and where to download zips.” No skip logic inside. |
+| **`plugin.video.introskip-1.0.1.zip`** | `plugin.video.introskip` | **Your actual addon** (service, UI, TheIntroDB client). |
 
-### You don’t type long URLs into Kodi
+You **cannot** merge those into a single zip and still use **Install from repository** the normal way — Kodi’s repo system expects a separate repository add-on that points at the index (`addons.xml`) and the addon zip(s).
 
-Kodi’s **Install from zip** expects a **file** (USB, phone storage, SMB share, etc.). Nobody pastes `raw.githubusercontent.com/...` into the player.
+**What people actually download by hand:**
 
-**Easiest for users:** open the repo in a **browser**, go to the **`repo/`** folder, tap the zip → download → copy to the device running Kodi (or USB), then in Kodi: **Install from zip** → browse to that file.
+- **Repo route:** they only need **one** file — **`repository.smartintro.jz-1.0.0.zip`**. After that, **Install from repository** pulls **`plugin.video.introskip-*.zip`** for them; they don’t download it from GitHub manually.
+- **Direct route:** they only download **`plugin.video.introskip-1.0.1.zip`** and skip the repository entirely.
 
-**Folder link (share this):**  
-[github.com/JZOnTheGit/Smart-Intro-Skip/tree/main/repo](https://github.com/JZOnTheGit/Smart-Intro-Skip/tree/main/repo)
+So: two zips on the server, but each user only grabs **one** of them, depending on the path they choose.
 
-### Install from my Kodi repository (updates in Kodi)
+### Repo route (recommended — updates in Kodi)
 
-1. Download **`repository.smartintro.jz-1.0.0.zip`** from the link above (or the repo page → **`repo/`** → file → **Download**).
-2. **Settings → Add-ons → Install from zip file** → pick that zip (enable unknown sources if asked).
+1. Download **`repository.smartintro.jz-1.0.0.zip`** from the **root of this GitHub repo** (short link: [project root on `main`](https://github.com/JZOnTheGit/Smart-Intro-Skip)).
+2. **Settings → Add-ons → Install from zip file** → select that zip (use USB / phone / share — same as any zip).
 3. **Settings → Add-ons → Install from repository** → **Smart Intro Skip repo** → **Services** → **Smart Intro Skip** → **Install**.
 
-After you publish new versions (bump `addon.xml`, update `repo/`, push), users can **Check for updates** on the addon like any other repo.
+*(Optional)* **File manager → Add source** can point at a folder or URL where you put the zip; GitHub’s web UI is usually easier than typing a long URL in Kodi.
 
-### Direct zip install (no repository)
+### Direct zip (no repository)
 
-1. Download **`plugin.video.introskip-1.0.1.zip`** from the same **`repo/`** folder on GitHub.
+1. Download **`plugin.video.introskip-1.0.1.zip`** from the same [repo root](https://github.com/JZOnTheGit/Smart-Intro-Skip).
 2. **Settings → Add-ons → Install from zip file**
-3. Enable under **My add-ons → Services** if needed.
 
 ### Releasing a new version (for you)
 
-1. Edit **`plugin.video.introskip/addon.xml`** → bump `version`.
-2. Rebuild the addon zip from the repo root (folder must be **inside** the zip):  
-   `zip -r repo/plugin.video.introskip-X.Y.Z.zip plugin.video.introskip`
-3. Update **`repo/addons.xml`** to match the new version (copy the addon block from `addon.xml` if needed).
-4. Regenerate checksum: `md5 -q repo/addons.xml > repo/addons.xml.md5`
-5. Commit and push **`main`**.  
-   (Keep the repo **public** so `raw.githubusercontent.com` URLs work for everyone.)
+1. Bump **`version`** in **`plugin.video.introskip/addon.xml`**.
+2. Rebuild **`plugin.video.introskip-X.Y.Z.zip`** from the project root (folder must be inside the zip):  
+   `zip -r plugin.video.introskip-X.Y.Z.zip plugin.video.introskip`
+3. Update **`addons.xml`** in the project root to match (copy the `<addon>...</addon>` block from `addon.xml` if needed).
+4. `md5 -q addons.xml > addons.xml.md5`
+5. Rebuild **`repository.smartintro.jz-1.0.0.zip`** only if you changed **`repository.smartintro.jz/addon.xml`**:  
+   `zip -r repository.smartintro.jz-1.0.0.zip repository.smartintro.jz`
+6. Commit and push **`main`** (repo must stay **public** for `raw.githubusercontent.com` URLs).
 
 ## Settings
 

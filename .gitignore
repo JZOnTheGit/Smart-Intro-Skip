@@ -2,5 +2,6 @@
 __pycache__/
 *.py[cod]
 *.zip
-!repo/*.zip
+!repository.smartintro.jz-*.zip
+!plugin.video.introskip-*.zip
 plugin.video.introskip/storage/data.json
