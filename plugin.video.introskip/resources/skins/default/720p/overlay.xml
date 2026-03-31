@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- skip dialog — white pill (720p) -->
+<window type="dialog" id="14000">
+    <defaultcontrol always="true">3001</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+    <controls>
+        <control type="group">
+            <posx>1060</posx>
+            <posy>636</posy>
+            <width>200</width>
+            <height>38</height>
+
+            <animation effect="slide" start="32,0" end="0,0" time="260" tween="cubic" easing="out">WindowOpen</animation>
+            <animation effect="fade" start="0" end="100" time="260">WindowOpen</animation>
+            <animation effect="slide" start="0,0" end="32,0" time="200" tween="cubic" easing="in">WindowClose</animation>
+            <animation effect="fade" start="100" end="0" time="200">WindowClose</animation>
+
+            <control type="image">
+                <posx>1</posx>
+                <posy>2</posy>
+                <width>200</width>
+                <height>38</height>
+                <texture colordiffuse="55000000" border="12">rounded_rect.png</texture>
+            </control>
+
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>200</width>
+                <height>38</height>
+                <texture colordiffuse="FFF8F8F8" border="12">rounded_rect.png</texture>
+            </control>
+
+            <control type="button" id="3001">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>200</width>
+                <height>38</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font12</font>
+                <textcolor>FF111111</textcolor>
+                <focusedcolor>FF000000</focusedcolor>
+                <texturefocus colordiffuse="FFFFFFFF" border="12">rounded_rect.png</texturefocus>
+                <texturenofocus colordiffuse="00000000" border="12">rounded_rect.png</texturenofocus>
+                <label>Skip intro</label>
+                <onclick>SetFocus(3001)</onclick>
+            </control>
+        </control>
+    </controls>
+</window>
