@@ -24,29 +24,21 @@ So it works with **Seren, Fen, Umbrella, or your local library** as long as the 
 
 ## Installation
 
-### Repo route (recommended — updates in Kodi)
+**Easy link (downloads + short URL):**  
+**[https://jzonethegit.github.io/Smart-Intro-Skip/](https://jzonethegit.github.io/Smart-Intro-Skip/)**
 
-1. Download **`repository.smartintro.jz-1.0.0.zip`** from the **root of this GitHub repo** (short link: [project root on `main`](https://github.com/JZOnTheGit/Smart-Intro-Skip)).
-2. **Settings → Add-ons → Install from zip file** → select that zip (use USB / phone / share — same as any zip).
+Open that page on your phone or PC, download a zip, copy it to your Kodi device (USB, share, etc.), then use **Settings → Add-ons → Install from zip file**.
+
+### Repo route (recommended — get updates in Kodi)
+
+1. Download **`repository.smartintro.jz-1.0.0.zip`** from the link above (or the [GitHub repo](https://github.com/JZOnTheGit/Smart-Intro-Skip) → **`docs`** folder).
+2. **Settings → Add-ons → Install from zip file** → choose that zip.
 3. **Settings → Add-ons → Install from repository** → **Smart Intro Skip repo** → **Services** → **Smart Intro Skip** → **Install**.
 
-*(Optional)* **File manager → Add source** can point at a folder or URL where you put the zip; GitHub’s web UI is usually easier than typing a long URL in Kodi.
+### Direct zip (addon only, no repository)
 
-### Direct zip (no repository)
-
-1. Download **`plugin.video.introskip-1.0.1.zip`** from the same [repo root](https://github.com/JZOnTheGit/Smart-Intro-Skip).
+1. Download **`plugin.video.introskip-1.0.1.zip`** from the same download page.
 2. **Settings → Add-ons → Install from zip file**
-
-### Releasing a new version (for you)
-
-1. Bump **`version`** in **`plugin.video.introskip/addon.xml`**.
-2. Rebuild **`plugin.video.introskip-X.Y.Z.zip`** from the project root (folder must be inside the zip):  
-   `zip -r plugin.video.introskip-X.Y.Z.zip plugin.video.introskip`
-3. Update **`addons.xml`** in the project root to match (copy the `<addon>...</addon>` block from `addon.xml` if needed).
-4. `md5 -q addons.xml > addons.xml.md5`
-5. Rebuild **`repository.smartintro.jz-1.0.0.zip`** only if you changed **`repository.smartintro.jz/addon.xml`**:  
-   `zip -r repository.smartintro.jz-1.0.0.zip repository.smartintro.jz`
-6. Commit and push **`main`** (repo must stay **public** for `raw.githubusercontent.com` URLs).
 
 ## Settings
 
