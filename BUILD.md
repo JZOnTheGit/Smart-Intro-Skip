@@ -2,14 +2,14 @@
 
 ## Turn on github.io (one-time — required for Kodi “Install from repository”)
 
-Kodi loads **`addons.xml`** from **`https://jzonethegit.github.io/Smart-Intro-Skip/addons.xml`**. If that URL 404s in a browser, the repo add-on cannot connect.
+Kodi loads **`addons.xml`** from **`https://jzonthegit.github.io/Smart-Intro-Skip/addons.xml`**. If that URL 404s in a browser, the repo add-on cannot connect.
 
 Use **one** deployment method (branch is simplest):
 
 1. GitHub repo → **Settings** → **Pages**
 2. **Build and deployment → Source**: **Deploy from a branch** (not “GitHub Actions” unless you add a workflow back).
 3. **Branch**: `main`, **Folder**: **`/docs`**, **Save**
-4. Wait ~1 minute, then open **`https://jzonethegit.github.io/Smart-Intro-Skip/addons.xml`** — you should see XML, not a 404 page.
+4. Wait ~1 minute, then open **`https://jzonthegit.github.io/Smart-Intro-Skip/addons.xml`** — you should see XML, not a 404 page.
 
 The site is the **`docs/`** folder on **`main`** served as static files. No Jekyll build is needed (`docs/.nojekyll` is present).
 
@@ -30,7 +30,7 @@ The repository addon uses **`.../zips/`** for `datadir` so Kodi pulls **`plugin.
 4. If **`repository.smartintro.jz/addon.xml`** changed, rebuild the **named** repository installer:
    ```bash
    rm -f docs/zips/01-install-this-first-repository.smartintro.jz-*.zip
-   zip -r docs/zips/01-install-this-first-repository.smartintro.jz-1.0.2.zip repository.smartintro.jz
+   zip -r docs/zips/01-install-this-first-repository.smartintro.jz-1.0.3.zip repository.smartintro.jz
    ```
 5. Update **`docs/index.html`** and **`docs/zips/index.html`** if zip names or versions changed
 6. Commit and push **`main`**
