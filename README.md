@@ -24,11 +24,11 @@ So it works with **Seren, Fen, Umbrella, or your local library** as long as the 
 
 ## Installation
 
-**Download page:** [https://jzonethegit.github.io/Smart-Intro-Skip/](https://jzonethegit.github.io/Smart-Intro-Skip/)
+**Download page:** [https://jzonethegit.github.io/Smart-Intro-Skip/zips](https://jzonethegit.github.io/Smart-Intro-Skip/zips/)
 
 **Kodi file source URL** (same zips as the page above):
 
-`https://jzonethegit.github.io/Smart-Intro-Skip/`
+`https://jzonethegit.github.io/Smart-Intro-Skip/zips/`
 
 **Install from zip** → open that source → pick **`01-install-this-first-…`** first (recommended), or **`plugin.video.introskip-1.0.1.zip`** for addon-only.
 
