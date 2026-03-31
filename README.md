@@ -24,23 +24,37 @@ So it works with **Seren, Fen, Umbrella, or your local library** as long as the 
 
 ## Installation
 
-### Install from my Kodi repository (updates show up in Kodi)
+### Why are there two zip files in `repo/`?
 
-1. Download **`repository.smartintro.jz-1.0.0.zip`** (the small “repo installer” zip), from either:
-   - **Raw link:**  
-     `https://raw.githubusercontent.com/JZOnTheGit/Smart-Intro-Skip/main/repo/repository.smartintro.jz-1.0.0.zip`  
-   - Or open the repo on GitHub → folder **`repo/`** → download the file.
-2. In Kodi: **Settings → Add-ons → Install from zip file** → select that zip (you may need to enable unknown sources once).
+| File | What it is |
+|------|------------|
+| **`repository.smartintro.jz-1.0.0.zip`** | Small “repo installer” only. It tells Kodi where to fetch **`addons.xml`** and the addon. Install **this one first** if you want *Install from repository* → updates. |
+| **`plugin.video.introskip-1.0.1.zip`** | The **actual addon**. If you use the repo above, Kodi downloads this for you — you don’t need to grab it by hand. Only use this zip for a **direct install** (no repo). |
+
+So: **repo path** = one small zip once, then pick the addon inside Kodi. **Direct path** = only the big addon zip.
+
+### You don’t type long URLs into Kodi
+
+Kodi’s **Install from zip** expects a **file** (USB, phone storage, SMB share, etc.). Nobody pastes `raw.githubusercontent.com/...` into the player.
+
+**Easiest for users:** open the repo in a **browser**, go to the **`repo/`** folder, tap the zip → download → copy to the device running Kodi (or USB), then in Kodi: **Install from zip** → browse to that file.
+
+**Folder link (share this):**  
+[github.com/JZOnTheGit/Smart-Intro-Skip/tree/main/repo](https://github.com/JZOnTheGit/Smart-Intro-Skip/tree/main/repo)
+
+### Install from my Kodi repository (updates in Kodi)
+
+1. Download **`repository.smartintro.jz-1.0.0.zip`** from the link above (or the repo page → **`repo/`** → file → **Download**).
+2. **Settings → Add-ons → Install from zip file** → pick that zip (enable unknown sources if asked).
 3. **Settings → Add-ons → Install from repository** → **Smart Intro Skip repo** → **Services** → **Smart Intro Skip** → **Install**.
 
-After that, new versions appear under **My add-ons** when you bump the version in `addon.xml` and refresh the repo (Kodi checks `repo/addons.xml` on the `main` branch).
+After you publish new versions (bump `addon.xml`, update `repo/`, push), users can **Check for updates** on the addon like any other repo.
 
-### Zip install (addon only, no repo)
+### Direct zip install (no repository)
 
-1. Download **`plugin.video.introskip-1.0.1.zip`**:  
-   `https://raw.githubusercontent.com/JZOnTheGit/Smart-Intro-Skip/main/repo/plugin.video.introskip-1.0.1.zip`
+1. Download **`plugin.video.introskip-1.0.1.zip`** from the same **`repo/`** folder on GitHub.
 2. **Settings → Add-ons → Install from zip file**
-3. **My add-ons → Services → Smart Intro Skip** — enable it  
+3. Enable under **My add-ons → Services** if needed.
 
 ### Releasing a new version (for you)
 
