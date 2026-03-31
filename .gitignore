@@ -2,4 +2,5 @@
 __pycache__/
 *.py[cod]
 *.zip
+!repo/*.zip
 plugin.video.introskip/storage/data.json

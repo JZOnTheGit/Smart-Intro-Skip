@@ -24,13 +24,33 @@ So it works with **Seren, Fen, Umbrella, or your local library** as long as the 
 
 ## Installation
 
+### Install from my Kodi repository (updates show up in Kodi)
 
+1. Download **`repository.smartintro.jz-1.0.0.zip`** (the small “repo installer” zip), from either:
+   - **Raw link:**  
+     `https://raw.githubusercontent.com/JZOnTheGit/Smart-Intro-Skip/main/repo/repository.smartintro.jz-1.0.0.zip`  
+   - Or open the repo on GitHub → folder **`repo/`** → download the file.
+2. In Kodi: **Settings → Add-ons → Install from zip file** → select that zip (you may need to enable unknown sources once).
+3. **Settings → Add-ons → Install from repository** → **Smart Intro Skip repo** → **Services** → **Smart Intro Skip** → **Install**.
 
-### Zip install
+After that, new versions appear under **My add-ons** when you bump the version in `addon.xml` and refresh the repo (Kodi checks `repo/addons.xml` on the `main` branch).
 
-1. Grab the addon zip  
-2. **Settings → Add-ons → Install from zip file**  
+### Zip install (addon only, no repo)
+
+1. Download **`plugin.video.introskip-1.0.1.zip`**:  
+   `https://raw.githubusercontent.com/JZOnTheGit/Smart-Intro-Skip/main/repo/plugin.video.introskip-1.0.1.zip`
+2. **Settings → Add-ons → Install from zip file**
 3. **My add-ons → Services → Smart Intro Skip** — enable it  
+
+### Releasing a new version (for you)
+
+1. Edit **`plugin.video.introskip/addon.xml`** → bump `version`.
+2. Rebuild the addon zip from the repo root (folder must be **inside** the zip):  
+   `zip -r repo/plugin.video.introskip-X.Y.Z.zip plugin.video.introskip`
+3. Update **`repo/addons.xml`** to match the new version (copy the addon block from `addon.xml` if needed).
+4. Regenerate checksum: `md5 -q repo/addons.xml > repo/addons.xml.md5`
+5. Commit and push **`main`**.  
+   (Keep the repo **public** so `raw.githubusercontent.com` URLs work for everyone.)
 
 ## Settings
 
