@@ -126,9 +126,25 @@ def _run_service():
             xbmc.log('[IntroSkip] {}'.format(msg), xbmc.LOGINFO)
             _debug_osd(msg)
 
+            if _playback_past_intro_end(player, api_end):
+                xbmc.log(
+                    '[IntroSkip] Already past intro window (resume or seek); skipping UI',
+                    xbmc.LOGINFO,
+                )
+                skip_done = True
+                continue
+
             _wait_for_time(monitor, player, api_start)
 
             if not player.isPlaying():
+                continue
+
+            if _playback_past_intro_end(player, api_end):
+                xbmc.log(
+                    '[IntroSkip] Past intro end after wait (seek); skipping UI',
+                    xbmc.LOGINFO,
+                )
+                skip_done = True
                 continue
 
             if auto_skip:
@@ -159,6 +175,16 @@ def _run_service():
                 _debug_osd('No media IDs found')
 
     xbmc.log('[IntroSkip] Service stopped', xbmc.LOGINFO)
+
+
+def _playback_past_intro_end(player, api_end, margin=0.25):
+    """True if timeline is already at/after intro end (e.g. resumed mid-episode)."""
+    try:
+        if not player.isPlaying():
+            return True
+        return player.getTime() >= (api_end - margin)
+    except Exception:
+        return True
 
 
 def _wait_for_time(monitor, player, target_time):
