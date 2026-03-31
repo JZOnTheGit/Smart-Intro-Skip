@@ -15,7 +15,7 @@ The site is the **`docs/`** folder on **`main`** served as static files. No Jeky
 
 **Layout:** `addons.xml` and checksums stay in **`docs/`** root (what Kodi’s repo uses). **Zips** are in **`docs/zips/`**. **`docs/zips/index.html`** is required so **`/zips/`** does not 404 on GitHub Pages (folders need an `index.html`). The site root **`docs/index.html`** is the minimal download page.
 
-The repository addon uses **`.../zips/`** for `datadir` so Kodi pulls **`plugin.video.introskip-X.Y.Z.zip`** from there (filename must match id + version).
+The repository addon uses **`.../zips/`** for `datadir` so Kodi pulls **`plugin.video.introskip-X.Y.Z.zip`** from there (filename must match id + version). **`info` / `checksum` / `datadir` must be inside `<dir>`** — Kodi 20+ no longer accepts the old flat schema ([xbmc `Repository.cpp`](https://github.com/xbmc/xbmc/blob/master/xbmc/addons/Repository.cpp)).
 
 ## Release checklist
 
@@ -30,7 +30,7 @@ The repository addon uses **`.../zips/`** for `datadir` so Kodi pulls **`plugin.
 4. If **`repository.smartintro.jz/addon.xml`** changed, rebuild the **named** repository installer:
    ```bash
    rm -f docs/zips/01-install-this-first-repository.smartintro.jz-*.zip
-   zip -r docs/zips/01-install-this-first-repository.smartintro.jz-1.0.3.zip repository.smartintro.jz
+   zip -r docs/zips/01-install-this-first-repository.smartintro.jz-1.0.4.zip repository.smartintro.jz
    ```
 5. Update **`docs/index.html`** and **`docs/zips/index.html`** if zip names or versions changed
 6. Commit and push **`main`**
