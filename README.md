@@ -1,60 +1,80 @@
-# Smart Intro Skip
+# TheIntroDB – Kodi Addon
 
 <p align="center">
-  <img src="plugin.video.introskip/resources/icon.png" alt="Smart Intro Skip" width="160" height="160">
+  <img src="https://raw.githubusercontent.com/TheIntroDB/theintrodb-assets/main/logo-banner.png">
 </p>
 
-Kodi service add-on that looks up intro start/end from **[TheIntroDB](https://theintrodb.org)** and either shows a **Skip intro** control or **auto-skips** (optional).
+Kodi service add-on that gets intro segments from **[TheIntroDB](https://theintrodb.org)** and either shows a **Skip intro** control or **auto-skips** it.
 
-## Credits
+**Requirements:** Kodi 19+. **TMDb metadata is recommended** for best accuracy. IMDb works as a fallback for supported items.
 
-- **TheIntroDB** — database and API: [theintrodb.org](https://theintrodb.org) · [github.com/TheIntroDB](https://github.com/TheIntroDB)  
-- **Pasithea0** — API creator / maintainer: [github.com/Pasithea0](https://github.com/Pasithea0)  
+**Important:** Lookups happen when playback starts. If the current item does not expose a usable **TMDb** or **IMDb** ID, the add-on cannot match it with TheIntroDB.
 
-This add-on is a separate Kodi client; it is not run or hosted by TheIntroDB.
+**Troubleshooting (no skip button):** See the Metadata Requirements and Installation sections below.
+
+---
 
 ## Installation
 
-**1. Repository (updates from Kodi)**  
+### Option A: Add repository (automatic updates)
 
-- Zips: [jzonthegit.github.io/Smart-Intro-Skip/zips](https://jzonthegit.github.io/Smart-Intro-Skip/zips/)  
-- File source URL: `https://jzonthegit.github.io/Smart-Intro-Skip/zips/`  
-- Install **`01-install-this-first-repository.smartintro.jz-….zip`** from **Settings → Add-ons → Install from zip file**, then **Install from repository** → **Smart Intro Skip repo** → **Smart Intro Skip**.
+1. In Kodi, go to **Settings → Add-ons → Install from zip file**.
+2. Download the repository zip from:
+   `https://theintrodb.github.io/kodi-addon/zips/01-install-this-first-repository.smartintro.jz-1.0.7.zip`
+3. Install the zip, then go to **Install from repository**.
+4. Open **TheIntroDB Kodi Repository** and install **TheIntroDB Kodi Addon**.
+5. Allow third-party repository updates under **Settings → System → Add-ons** if you want automatic updates.
 
-**2. Add-on zip only**  
+### Option B: Add-on zip only
 
-- Download **`plugin.video.introskip-….zip`** from the same **zips** folder and install from zip.
+1. Download the latest add-on zip from:
+   `https://theintrodb.github.io/kodi-addon/zips/plugin.video.introskip-1.2.1.zip`
+2. In Kodi, choose **Settings → Add-ons → Install from zip file**.
+3. Select the zip to install the add-on directly.
 
-**3. Copy into the Kodi add-ons folder**  
+### Option C: Copy into the Kodi add-ons folder
 
-- Unzip or copy the add-on folder (named `plugin.video.introskip`) into Kodi’s `addons` directory for your platform, then restart Kodi or reload add-ons. Same layout as a zip install.
+1. Unzip or copy the add-on folder named `plugin.video.introskip` into Kodi’s add-ons directory for your platform.
+2. Restart Kodi or reload add-ons.
 
-Allow third-party repo updates under **Settings → System → Add-ons** if you want automatic updates from the repo.
+---
+
+### Metadata Requirements
+
+**TMDB is recommended.** The add-on prefers TMDB IDs for matching. If TMDB is unavailable, it can fall back to IMDb `tt...` IDs.
+
+For TV episodes, the playing item also needs valid **season** and **episode** numbers. If your source add-on or library does not expose provider IDs, TheIntroDB cannot match the item.
 
 ## Features
 
-- **Skip intro** button for the intro window (default).  
-- **Auto-skip** — optional; seeks past the intro without showing the button.
+- **Skip intro** button during the intro window
+- **Auto-skip** mode that seeks past the intro without showing the button
+- **Optional API key** support for TheIntroDB
+- **Debug logging and on-screen notifications** for troubleshooting
 
-## How it works
+## How It Works
 
-On each new play, the service reads **what Kodi’s player exposes** for the current item (via JSON-RPC `Player.GetItem` and `VideoInfoTag`): **TMDB id** (preferred) or **IMDb** `tt…` id, plus **season** and **episode** for TV. It calls TheIntroDB once, gets intro **start/end** times, waits until roughly **start**, then shows the button or seeks.  
+On each new playback, the add-on reads what Kodi exposes for the current item through JSON-RPC `Player.GetItem` and `VideoInfoTag`: **TMDb ID** when available, otherwise **IMDb** `tt...` ID, plus **season** and **episode** for TV content.
 
-If the playing item has **no usable ids** (many add-ons only set a title and not `uniqueid`), the add-on cannot match — that has to come from the source add-on or library metadata.
+It then calls TheIntroDB, retrieves intro **start** and **end** times, waits until the intro window begins, and either shows the skip overlay or seeks automatically depending on your settings.
 
-## Settings
+## Configuration
 
-| | |
-|--|--|
-| **General** | Auto-skip; extra seconds after intro end |
-| **TheIntroDB** | Enable lookups; API key if the site requires it |
-| **Debug** | Extra logging / on-screen notifications |
+TheIntroDB Kodi Addon includes a few settings to adjust behavior:
 
-## Requirements
+- **Auto-skip**: Skip without showing the button
+- **Extra seconds after intro end**: Adds a small offset to the skip target
+- **Enable lookups**: Turns TheIntroDB requests on or off
+- **API key**: Lets you use your TheIntroDB API key if required
+- **Debug options**: Enables verbose logging and on-screen notifications
 
-- Kodi **19+** (Python 3)  
-- Items with **TMDB or IMDb** id where relevant, and **season/episode** for TV episodes  
+---
+
+## Credits
+
+- **TheIntroDB** — database and API: [theintrodb.org](https://theintrodb.org) · [github.com/TheIntroDB](https://github.com/TheIntroDB)
+- **JZOnTheGit** — original addon creator: [github.com/JZOnTheGit](https://github.com/JZOnTheGit)
 
 ## License
 
-GPL-2.0-or-later
+See [LICENSE](LICENSE) for details.
