@@ -11,7 +11,7 @@
     <extension point="xbmc.addon.metadata">
         <path>plugin.video.introskip-1.2.1.zip</path>
         <summary lang="en_GB">Skip TV intros using TheIntroDB</summary>
-        <description lang="en_GB">Looks up intro timings from TheIntroDB while you watch. Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode. Optional API key from theintrodb.org.</description>
+        <description lang="en_GB">Looks up intro timings from TheIntroDB while you watch. Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
         <platform>all</platform>
         <license>GPL-2.0-or-later</license>
         <assets>

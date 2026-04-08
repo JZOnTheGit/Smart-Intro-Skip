@@ -6,7 +6,7 @@
     </category>
     <category label="TheIntroDB">
         <setting id="introdb_enabled" type="bool" label="Enable lookups" default="true"/>
-        <setting id="introdb_api_key" type="text" label="API key (from theintrodb.org if required)" default=""/>
+        <setting id="introdb_api_key" type="text" label="Optional TheIntroDB API key" default=""/>
     </category>
     <category label="Debug">
         <setting id="debug_logging" type="bool" label="Verbose logging (kodi.log)" default="false"/>
