@@ -1,0 +1,60 @@
+# This workflow performs an automated release to GitHub
+# For TheIntroDB Kodi addon
+
+name: Release
+on:
+  push:
+    tags:
+    - 'v*'
+jobs:
+  build:
+    name: Release TheIntroDB Kodi Addon
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build zip files
+        run: |
+          sudo apt-get update
+          sudo apt-get install libxml2-utils
+          # Create addon zip
+          cd plugin.video.tidb
+          zip -r "../plugin.video.tidb-${GITHUB_REF#refs/tags/v}.zip" .
+          cd ..
+          # Generate addons.xml
+          cat > addons.xml << 'EOF'
+          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <addons>
+          EOF
+          cat repository.tidb.repo/addon.xml >> addons.xml
+          cat plugin.video.tidb/addon.xml >> addons.xml
+          echo '</addons>' >> addons.xml
+          # Generate MD5
+          md5sum addons.xml > addons.xml.md5
+      - name: Get body
+        id: get-body
+        run: |
+          # Extract release notes from README or use default
+          if [ -f README.md ]; then
+            description=$(sed '1,/^## Releases$/d;/## v[0-9\.]* ([0-9-]*)/d;/^$/,$d' README.md 2>/dev/null || echo "TheIntroDB Kodi addon v${GITHUB_REF#refs/tags/v}")
+          else
+            description="TheIntroDB Kodi addon v${GITHUB_REF#refs/tags/v}"
+          fi
+          echo $description
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "body<<$EOF" >> $GITHUB_OUTPUT
+          echo "$description" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body: ${{ steps.get-body.outputs.body }}
+          draft: false
+          prerelease: false
+          files: |
+            plugin.video.tidb-*.zip
+            addons.xml
+            addons.xml.md5

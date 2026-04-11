@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="repository.tidb.repo"
        name="TheIntroDB Kodi Addon Repo"
-       version="1.0.7"
+       version="2.0.0"
        provider-name="TheIntroDB">
     <extension point="xbmc.addon.repository" name="TheIntroDB Kodi Addon Repo">
         <dir>
-            <info compressed="false">https://TheIntroDB.github.io/kodi-addon/addons.xml</info>
-            <checksum>https://TheIntroDB.github.io/kodi-addon/addons.xml.md5</checksum>
-            <datadir zip="true">https://TheIntroDB.github.io/kodi-addon/zips/</datadir>
+            <info compressed="false">https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml</info>
+            <checksum>https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml.md5</checksum>
+            <datadir zip="true">https://github.com/TheIntroDB/kodi-addon/releases/download/</datadir>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">

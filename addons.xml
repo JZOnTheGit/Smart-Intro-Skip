@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="repository.tidb.repo"
+       name="TheIntroDB Kodi Addon Repo"
+       version="1.0.7"
+       provider-name="TheIntroDB">
+    <extension point="xbmc.addon.repository" name="TheIntroDB Kodi Addon Repo">
+        <dir>
+            <info compressed="false">https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml</info>
+            <checksum>https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml.md5</checksum>
+            <datadir zip="true">https://github.com/TheIntroDB/kodi-addon/releases/download/</datadir>
+        </dir>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <summary lang="en_GB">Source for TheIntroDB Kodi Addon (GitHub)</summary>
+        <description lang="en_GB">Adds the TheIntroDB service addon from github.com/TheIntroDB</description>
+        <platform>all</platform>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+    </extension>
+</addon>
 <addon id="plugin.video.tidb"
        name="TheIntroDB Kodi Addon"
        version="1.2.1"

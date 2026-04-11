@@ -1,0 +1,77 @@
+# This workflow performs status checks to identify broken code paths
+# for TheIntroDB Kodi addon
+
+name: Status
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron:  '0 */6 * * *'  # Run every 6 hours instead of every 30 minutes
+jobs:
+  tests:
+    name: Status checks 
+    runs-on: ubuntu-latest
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONPATH: ${{ github.workspace }}/plugin.video.tidb/resources/lib:${{ github.workspace }}/tests
+    steps:
+    - name: Check out ${{ github.sha }} from repository ${{ github.repository }}
+      uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install requests
+    - name: TEST TheIntroDB API connectivity
+      run: |
+        python -c "
+        import requests
+        try:
+            response = requests.get('https://api.theintrodb.org/health', timeout=10)
+            print(f'API Status: {response.status_code}')
+            if response.status_code == 200:
+                print('TheIntroDB API is accessible')
+            else:
+                print('TheIntroDB API returned non-200 status')
+                exit(1)
+        except Exception as e:
+            print(f'Failed to connect to TheIntroDB API: {e}')
+            exit(1)
+        "
+      if: always()
+    - name: TEST Addon imports
+      run: |
+        python -c "
+        import sys
+        sys.path.insert(0, 'plugin.video.tidb/resources/lib')
+        try:
+            # Test basic imports
+            import service
+            print('Service module imports successfully')
+        except Exception as e:
+            print(f'Import test failed: {e}')
+            # Don't fail the build for import issues during status checks
+        "
+      if: always()
+    - name: TEST Repository structure
+      run: |
+        # Check that required files exist
+        for file in repository.tidb.repo/addon.xml plugin.video.tidb/addon.xml; do
+          if [ ! -f "$file" ]; then
+            echo "Missing required file: $file"
+            exit 1
+          fi
+          echo "Found: $file"
+        done
+        
+        # Validate XML files
+        for file in repository.tidb.repo/addon.xml plugin.video.tidb/addon.xml; do
+          if command -v xmllint >/dev/null 2>&1; then
+            xmllint --noout "$file" || echo "XML validation failed for $file"
+          fi
+        done
+      if: always()

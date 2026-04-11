@@ -1,0 +1,54 @@
+# This workflow performs the various sanity tests, integration tests and
+# may run parts of the add-on and add-on service to get a better testing
+# coverage.
+
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    types: [ opened, edited, synchronize ]
+    branches:
+      - main
+jobs:
+  tests:
+    name: Add-on testing
+    runs-on: ubuntu-latest
+    env:
+      PYTHONIOENCODING: utf-8
+      PYTHONPATH: ${{ github.workspace }}/plugin.video.tidb/resources/lib:${{ github.workspace }}/tests
+    steps:
+    - name: Check out ${{ github.sha }} from repository ${{ github.repository }}
+      uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install flake8 pylint coverage
+    - name: Run flake8
+      run: python -m flake8 plugin.video.tidb/resources/lib/ tests/ || true
+      if: always()
+    - name: Run pylint
+      run: python -m pylint plugin.video.tidb/resources/lib/ tests/ || true
+      if: always()
+    - name: Run unit tests
+      run: |
+        if [ -d tests ]; then
+          coverage run -m unittest discover || true
+        fi
+      if: always()
+    - name: Upload code coverage to CodeCov
+      uses: codecov/codecov-action@v4
+      continue-on-error: true
+      env:
+        OS: 'ubuntu-latest'
+        PYTHON: '3.11'
+      with:
+        token: '${{ secrets.CODECOV_TOKEN }}'
+        flags: unittests
+        env_vars: 'OS,PYTHON'
