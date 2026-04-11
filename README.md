@@ -20,7 +20,7 @@ Kodi service add-on that gets intro segments from **[TheIntroDB](https://theintr
 
 1. In Kodi, go to **Settings → Add-ons → Install from zip file**.
 2. Download the latest repository zip from [GitHub Releases](https://github.com/TheIntroDB/kodi-addon/releases/latest):
-   - Look for `repository.tidb.repo-*.zip` in the latest release
+   - Look for `repository.tidb.repo.zip` in the latest release
    - Click to download the repository zip file
 3. Install the zip, then go to **Install from repository**.
 4. Open **TheIntroDB Kodi Repository** and install **TheIntroDB Kodi Addon**.
@@ -29,7 +29,7 @@ Kodi service add-on that gets intro segments from **[TheIntroDB](https://theintr
 ### Option B: Add-on zip only
 
 1. Download the latest add-on zip from [GitHub Releases](https://github.com/TheIntroDB/kodi-addon/releases/latest):
-   - Look for `plugin.video.tidb-*.zip` in the latest release
+   - Look for `plugin.video.tidb.zip` in the latest release
    - Click to download the plugin zip file
 2. In Kodi, choose **Settings → Add-ons → Install from zip file**.
 3. Select the zip to install the add-on directly.
