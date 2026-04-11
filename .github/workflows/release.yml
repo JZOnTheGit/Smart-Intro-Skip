@@ -17,11 +17,32 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libxml2-utils
-          # Create addon zip
+          
+          # Extract version from tag (remove 'v' prefix)
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "Building version: $VERSION"
+          
+          # Update plugin addon.xml version and path
           cd plugin.video.tidb
-          zip -r "../plugin.video.tidb-${GITHUB_REF#refs/tags/v}.zip" .
+          # Update version attribute
+          sed -i "s/version=\"[^\"]*\"/version=\"$VERSION\"/" addon.xml
+          # Update path in metadata
+          sed -i "s/<path>plugin.video.tidb-[^<]*<\/path>/<path>plugin.video.tidb-$VERSION.zip<\/path>/" addon.xml
+          # Add news line with version changelog and GitHub release URL
+          sed -i "s/<news lang=\"en_GB\">[^<]*<\/news>/<news lang=\"en_GB\">v$VERSION — Release $VERSION with latest features and fixes. [View Release](https:\/\/github.com\/${GITHUB_REPOSITORY}\/releases\/tag\/${GITHUB_REF#refs\/tags\/})<\/news>/" addon.xml
           cd ..
-          # Generate addons.xml
+          
+          # Create plugin zip
+          cd plugin.video.tidb
+          zip -r "../plugin.video.tidb-$VERSION.zip" .
+          cd ..
+          
+          # Create repository zip
+          cd repository.tidb.repo
+          zip -r "../repository.tidb.repo-$VERSION.zip" .
+          cd ..
+          
+          # Generate addons.xml with updated versions
           cat > addons.xml << 'EOF'
           <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
           <addons>
@@ -56,5 +77,6 @@ jobs:
           prerelease: false
           files: |
             plugin.video.tidb-*.zip
+            repository.tidb.repo-*.zip
             addons.xml
             addons.xml.md5
