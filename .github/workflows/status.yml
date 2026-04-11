@@ -5,6 +5,7 @@ name: Status
 on:
   pull_request:
   push:
+  workflow_dispatch:
   schedule:
     - cron:  '0 */6 * * *'  # Run every 6 hours instead of every 30 minutes
 jobs:
