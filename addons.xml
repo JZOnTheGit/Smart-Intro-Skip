@@ -6,8 +6,8 @@
        provider-name="TheIntroDB">
     <extension point="xbmc.addon.repository" name="TheIntroDB Kodi Addon Repo">
         <dir>
-            <info compressed="false">https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml</info>
-            <checksum>https://github.com/TheIntroDB/kodi-addon/releases/latest/download/addons.xml.md5</checksum>
+            <info compressed="false">https://raw.githubusercontent.com/TheIntroDB/kodi-addon/main/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/TheIntroDB/kodi-addon/main/addons.xml.md5</checksum>
             <datadir zip="true">https://github.com/TheIntroDB/kodi-addon/releases/download/</datadir>
         </dir>
     </extension>
@@ -22,14 +22,14 @@
 </addon>
 <addon id="plugin.video.tidb"
        name="TheIntroDB Kodi Addon"
-       version="1.2.1"
+       version="1.2.2"
        provider-name="TheIntroDB">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
     </requires>
     <extension point="xbmc.service" library="service.py" start="startup"/>
     <extension point="xbmc.addon.metadata">
-        <path>plugin.video.tidb-1.2.1.zip</path>
+        <path>v1.2.2/plugin.video.tidb.zip</path>
         <summary lang="en_GB">Skip TV intros using TheIntroDB</summary>
         <description lang="en_GB">Looks up intro timings from TheIntroDB while you watch. Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
         <platform>all</platform>
@@ -37,7 +37,7 @@
         <assets>
             <icon>resources/icon.png</icon>
         </assets>
-        <news lang="en_GB">v1.2.1 — Packaging refresh for OTA; install repository zip 1.0.7+ for logo on the repo entry in Kodi.</news>
+        <news lang="en_GB">v1.2.2 — Latest features and fixes. [See changelog](https://github.com/TheIntroDB/kodi-addon/releases/v1.2.2)</news>
     </extension>
 </addon>
 </addons>
