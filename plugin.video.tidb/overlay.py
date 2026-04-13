@@ -7,6 +7,12 @@ import xbmcaddon
 ADDON = xbmcaddon.Addon()
 ADDON_PATH = ADDON.getAddonInfo('path')
 
+# String IDs for localization
+STR_SKIP_INTRO = 32001
+STR_SKIP_RECAP = 32003
+STR_SKIP_CREDITS = 32004
+STR_SKIP_PREVIEW = 32005
+
 # must match overlay.xml window id
 OVERLAY_WINDOW_ID = 14000
 
@@ -22,11 +28,11 @@ _POLL_INTERVAL = 0.5
 class SkipOverlay(xbmcgui.WindowXMLDialog):
 
     def __new__(cls, xml_file, addon_path, skin, res,
-                callback=None, intro_end=None, player=None, monitor=None):
+                callback=None, intro_end=None, player=None, monitor=None, segment_type='intro', segment_index=0):
         return super(SkipOverlay, cls).__new__(cls, xml_file, addon_path, skin, res)
 
     def __init__(self, xml_file, addon_path, skin, res,
-                 callback=None, intro_end=None, player=None, monitor=None):
+                 callback=None, intro_end=None, player=None, monitor=None, segment_type='intro', segment_index=0):
         super(SkipOverlay, self).__init__(xml_file, addon_path, skin, res)
         self._skip_pressed = False
         self._callback = callback
@@ -36,16 +42,43 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
         self._poll_thread = None
         self._closed = False
         self._lock = threading.Lock()
+        self._segment_type = segment_type
+        self._segment_index = segment_index
 
     @property
     def skip_pressed(self):
         return self._skip_pressed
+
+    def _get_segment_button_text(self, segment_type, segment_index=0):
+        """Get the appropriate button text for the segment type and index."""
+        segment_texts = {
+            'intro': ADDON.getLocalizedString(STR_SKIP_INTRO),
+            'recap': ADDON.getLocalizedString(STR_SKIP_RECAP),
+            'credits': ADDON.getLocalizedString(STR_SKIP_CREDITS),
+            'preview': ADDON.getLocalizedString(STR_SKIP_PREVIEW)
+        }
+        base_text = segment_texts.get(segment_type, ADDON.getLocalizedString(STR_SKIP_INTRO))
+        
+        # Add segment number if there are multiple segments of the same type
+        if segment_index > 0:
+            return '{} {}'.format(base_text, segment_index + 1)
+        return base_text
 
     def onInit(self):
         mon = self._monitor if self._monitor is not None else xbmc.Monitor()
         if mon.abortRequested():
             self._dismiss_main_thread()
             return
+        
+        # Set dynamic button text based on segment type
+        try:
+            button_text = self._get_segment_button_text(self._segment_type, self._segment_index)
+            button_control = self.getControl(BUTTON_ID)
+            if button_control:
+                button_control.setLabel(button_text)
+        except Exception as e:
+            xbmc.log('[TheIntroDB] Failed to set button text: {}'.format(e), xbmc.LOGWARNING)
+        
         try:
             self.setFocusId(BUTTON_ID)
         except Exception:
@@ -131,7 +164,7 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             pass
 
 
-def show_skip_overlay(callback=None, intro_end=None, player=None, monitor=None):
+def show_skip_overlay(callback=None, intro_end=None, player=None, monitor=None, segment_type='intro', segment_index=0):
     # blocks until window closes; true if user hit skip
     mon = monitor if monitor is not None else xbmc.Monitor()
     if mon.abortRequested():
@@ -146,6 +179,8 @@ def show_skip_overlay(callback=None, intro_end=None, player=None, monitor=None):
             intro_end=intro_end,
             player=player,
             monitor=monitor,
+            segment_type=segment_type,
+            segment_index=segment_index,
         )
         wnd.doModal()
         pressed = wnd.skip_pressed

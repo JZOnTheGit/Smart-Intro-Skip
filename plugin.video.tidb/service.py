@@ -11,6 +11,12 @@ ADDON = xbmcaddon.Addon()
 _ADDON_ID = ADDON.getAddonInfo('id')
 ADDON_NAME = ADDON.getAddonInfo('name')
 
+# String IDs for localization
+STR_SKIP_INTRO = 32001
+STR_SKIP_RECAP = 32003
+STR_SKIP_CREDITS = 32004
+STR_SKIP_PREVIEW = 32005
+
 
 class TIDBMonitor(xbmc.Monitor):
     pass
@@ -28,6 +34,16 @@ def _fresh_bool(key):
         return xbmcaddon.Addon(_ADDON_ID).getSetting(key) == 'true'
     except Exception:
         return ADDON.getSetting(key) == 'true'
+
+
+def _get_segment_type_settings():
+    """Get which segment types are enabled in settings."""
+    return {
+        'intro': _fresh_bool('enable_intro'),
+        'recap': _fresh_bool('enable_recap'),
+        'credits': _fresh_bool('enable_credits'),
+        'preview': _fresh_bool('enable_preview')
+    }
 
 def _run_service():
     monitor = TIDBMonitor()
@@ -82,11 +98,10 @@ def _run_service():
         _debug_osd('tmdb={} imdb={} S{}E{}'.format(
             tmdb or '-', imdb or '-', m_season or '?', m_episode or '?'))
 
-        api_start = None
-        api_end = None
+        all_segments = {}
 
         if introdb_on and (tmdb or imdb):
-            api_start, api_end = introdb.query_intro(
+            all_segments = introdb.query_all_segments(
                 tmdb_id=tmdb,
                 imdb_id=imdb,
                 season=m_season,
@@ -94,57 +109,154 @@ def _run_service():
                 is_movie=m_movie,
             )
 
-        if api_start is not None and api_end is not None:
-            msg = 'TheIntroDB: {:.1f}s -> {:.1f}s'.format(api_start, api_end)
+        # Collect all enabled segments from all types and sort them chronologically
+        all_enabled_segments = []
+        
+        # Debug: Log all available segments from API
+        if all_segments:
+            xbmc.log('[TheIntroDB] API returned segments: {}'.format(list(all_segments.keys())), xbmc.LOGINFO)
+            for seg_type, segs in all_segments.items():
+                xbmc.log('[TheIntroDB] {} segments: {}'.format(seg_type, len(segs)), xbmc.LOGINFO)
+        
+        # Collect all enabled segments
+        segment_priority = ['intro', 'recap', 'preview', 'credits']
+        for segment_type in segment_priority:
+            # Check if this segment type is enabled in settings
+            setting_key = 'enable_{}'.format(segment_type)
+            is_enabled = _fresh_bool(setting_key)
+            xbmc.log('[TheIntroDB] {} enabled: {}'.format(segment_type, is_enabled), xbmc.LOGINFO)
+            
+            if not is_enabled:
+                xbmc.log('[TheIntroDB] Skipping {} - disabled in settings'.format(segment_type), xbmc.LOGINFO)
+                continue
+                
+            if segment_type not in all_segments:
+                xbmc.log('[TheIntroDB] No {} segments found in API response'.format(segment_type), xbmc.LOGINFO)
+                continue
+                
+            segments = all_segments[segment_type]
+            if not segments:
+                continue
+                
+            # Add all segments from this type with their type info
+            for segment_idx, segment in enumerate(segments):
+                segment_with_type = segment.copy()
+                segment_with_type['type'] = segment_type
+                segment_with_type['index'] = segment_idx
+                all_enabled_segments.append(segment_with_type)
+        
+        # Sort all segments by start time (chronological order)
+        all_enabled_segments.sort(key=lambda x: x['start'] if x['start'] is not None else 0)
+        
+        xbmc.log('[TheIntroDB] Total enabled segments to process: {}'.format(len(all_enabled_segments)), xbmc.LOGINFO)
+        
+        processed_any = False
+        
+        # Process segments in chronological order
+        for segment_idx, segment in enumerate(all_enabled_segments):
+            segment_type = segment['type']
+            api_start = segment['start']
+            api_end = segment['end']
+            
+            xbmc.log('[TheIntroDB] Processing {} segment {}: start={}, end={}'.format(segment_type, segment_idx, api_start, api_end), xbmc.LOGINFO)
+            
+            if api_start is None and api_end is None:
+                continue
+                
+            # Handle segments with null start/end appropriately
+            if api_start is None:
+                api_start = 0
+            if api_end is None:
+                # For credits/preview with null end, use total time
+                try:
+                    api_end = player.getTotalTime() - 10  # 10 seconds before end
+                except:
+                    continue
+                    
+            # Add segment index to distinguish multiple segments of same type
+            segment_display_name = segment_type
+            if len([s for s in all_enabled_segments if s['type'] == segment_type]) > 1:
+                segment_display_name = '{} {}'.format(segment_type, segment['index'] + 1)
+            
+            msg = 'TheIntroDB {}: {:.1f}s -> {:.1f}s'.format(segment_display_name, api_start, api_end)
             xbmc.log('[TheIntroDB] {}'.format(msg), xbmc.LOGINFO)
             _debug_osd(msg)
 
-            # resume or seek landed past intro — nothing to show
+            # resume or seek landed past segment end — nothing to show
+            current_time = player.getTime() if player.isPlaying() else 0
+            xbmc.log('[TheIntroDB] Checking timing for {} segment {}: current={:.1f}s, start={:.1f}s, end={:.1f}s'.format(segment_type, segment_idx, current_time, api_start, api_end), xbmc.LOGINFO)
             if _playback_past_intro_end(player, api_end):
                 xbmc.log(
-                    '[TheIntroDB] Already past intro window; skipping UI',
+                    '[TheIntroDB] Already past {} window; skipping UI'.format(segment_display_name),
                     xbmc.LOGINFO,
                 )
-                last_file = filename
+                processed_any = True
                 continue
 
-            # wait until roughly intro start so we do not pop the overlay at t=0
+            # wait until roughly segment start so we do not pop the overlay at t=0
+            xbmc.log('[TheIntroDB] Waiting for {} segment {} start time: {:.1f}s (current time: {:.1f}s)'.format(segment_type, segment_idx, api_start, player.getTime() if player.isPlaying() else 'N/A'), xbmc.LOGINFO)
             _wait_for_time(monitor, player, api_start)
+            
+            # Re-check current time after waiting, as skipping previous segments may have changed position
+            current_time_after_wait = player.getTime() if player.isPlaying() else 0
+            xbmc.log('[TheIntroDB] Finished waiting for {} segment {} (current time: {:.1f}s)'.format(segment_type, segment_idx, current_time_after_wait), xbmc.LOGINFO)
 
             if not player.isPlaying():
-                last_file = filename
+                processed_any = True
                 continue
 
-            if _playback_past_intro_end(player, api_end):
+            # Re-check if we're past the segment end after waiting (and potentially skipping previous segments)
+            if current_time_after_wait >= (api_end - 0.25):
                 xbmc.log(
-                    '[TheIntroDB] Past intro end after wait; skipping UI',
+                    '[TheIntroDB] Past {} end after wait; skipping UI (current: {:.1f}s, end: {:.1f}s)'.format(segment_display_name, current_time_after_wait, api_end),
                     xbmc.LOGINFO,
                 )
-                last_file = filename
+                processed_any = True
                 continue
 
+            segment_names = {
+                'intro': ADDON.getLocalizedString(STR_SKIP_INTRO),
+                'recap': ADDON.getLocalizedString(STR_SKIP_RECAP),
+                'credits': ADDON.getLocalizedString(STR_SKIP_CREDITS),
+                'preview': ADDON.getLocalizedString(STR_SKIP_PREVIEW)
+            }
+            base_segment_name = segment_names.get(segment_type, segment_type.title())
+            
+            # Create dynamic button text for multiple segments
+            segment_name = base_segment_name
+            
             if auto_skip:
-                skipper.execute_skip(player, api_start, api_end, filename)
-                _debug_osd('Auto-skipped intro')
-                xbmc.log('[TheIntroDB] Auto-skipped to {:.1f}s'.format(api_end), xbmc.LOGINFO)
+                skipper.execute_skip(player, api_start, api_end, filename, segment_type)
+                _debug_osd('Auto-skipped {}'.format(segment_name))
+                xbmc.log('[TheIntroDB] Auto-skipped {} to {:.1f}s'.format(segment_name, api_end), xbmc.LOGINFO)
             else:
                 if monitor.abortRequested():
                     break
-                xbmc.log('[TheIntroDB] Showing skip overlay', xbmc.LOGINFO)
+                xbmc.log('[TheIntroDB] Showing skip overlay for {}'.format(segment_name), xbmc.LOGINFO)
                 pressed = overlay_mod.show_skip_overlay(
                     intro_end=api_end,
                     player=player,
                     monitor=monitor,
+                    segment_type=segment_type,
+                    segment_index=segment_idx,
                 )
                 if pressed:
-                    xbmc.log('[TheIntroDB] User pressed Skip Intro', xbmc.LOGINFO)
-                    skipper.execute_skip(player, api_start, api_end, filename)
-                    _debug_osd('Skipped to {:.1f}s'.format(api_end))
+                    xbmc.log('[TheIntroDB] User pressed Skip {}'.format(segment_name), xbmc.LOGINFO)
+                    skipper.execute_skip(player, api_start, api_end, filename, segment_type)
+                    _debug_osd('Skipped {} to {:.1f}s'.format(segment_name, api_end))
+                    # If user skipped this segment, don't process remaining segments
+                    break
+                else:
+                    xbmc.log('[TheIntroDB] User did NOT skip {} - continuing to next segment'.format(segment_name), xbmc.LOGINFO)
+            processed_any = True
+            
+        if processed_any:
             last_file = filename
+            xbmc.log('[TheIntroDB] Marked file as processed: {}'.format(filename), xbmc.LOGINFO)
         else:
             if introdb_on:
                 if tmdb or imdb:
-                    _debug_osd('TheIntroDB: no intro for this item')
+                    _debug_osd('TheIntroDB: no segments for this item')
                 else:
                     _debug_osd('No TMDB or IMDb id')
             last_file = filename
