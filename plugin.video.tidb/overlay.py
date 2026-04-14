@@ -71,9 +71,6 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
         }
         base_text = segment_texts.get(segment_type, ADDON.getLocalizedString(STR_SKIP_INTRO))
         
-        # Add segment number if there are multiple segments of the same type
-        if segment_index > 0:
-            return '{} {}'.format(base_text, segment_index + 1)
         return base_text
 
     def onInit(self):
