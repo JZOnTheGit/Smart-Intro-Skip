@@ -8,7 +8,7 @@
         <dir>
             <info compressed="false">https://raw.githubusercontent.com/TheIntroDB/kodi-addon/main/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/TheIntroDB/kodi-addon/main/addons.xml.md5</checksum>
-            <datadir zip="true">https://github.com/TheIntroDB/kodi-addon/releases/download/</datadir>
+            <datadir zip="true">https://theintrodb.github.io/kodi-addon/</datadir>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
@@ -29,15 +29,15 @@
     </requires>
     <extension point="xbmc.service" library="service.py" start="startup"/>
     <extension point="xbmc.addon.metadata">
-        <path>v1.2.3/plugin.video.tidb.zip</path>
+        <path>plugin.video.tidb-1.2.3.zip</path>
         <summary lang="en_GB">Skip intro, recap, credits, and preview segments in movies and TV shows using TheIntroDB</summary>
-        <description lang="en_GB">Looks up segment timings from TheIntroDB while you watch, . Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
+        <description lang="en_GB">Looks up segment timings from TheIntroDB while you watch. Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
         <platform>all</platform>
         <license>GPL-2.0-or-later</license>
         <assets>
             <icon>resources/icon.png</icon>
         </assets>
-        <news lang="en_GB">v1.2.3 — Latest features and fixes. https://github.com/TheIntroDB/kodi-addon/releases/v1.2.3</news>
+        <news lang="en_GB">v1.2.3 — Support for more segment types and fix button background appearance</news>
     </extension>
 </addon>
 </addons>
