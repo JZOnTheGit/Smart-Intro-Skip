@@ -20,5 +20,37 @@ msgid "Smart Intro Skip"
 msgstr ""
 
 msgctxt "#32003"
-msgid "Intro detected"
+msgid "Skip Recap"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Skip Credits"
+msgstr ""
+
+msgctxt "#32005"
+msgid "Skip Preview"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Enable intro skipping"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Enable recap skipping"
+msgstr ""
+
+msgctxt "#32008"
+msgid "Enable credits skipping"
+msgstr ""
+
+msgctxt "#32009"
+msgid "Enable preview skipping"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Auto-skip segments (no button)"
+msgstr ""
+
+msgctxt "#32011"
+msgid "Extra seconds to skip past segment end"
 msgstr ""

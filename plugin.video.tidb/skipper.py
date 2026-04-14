@@ -5,7 +5,7 @@ import xbmcaddon
 ADDON = xbmcaddon.Addon()
 
 
-def execute_skip(player, intro_start, intro_end, filename=None):
+def execute_skip(player, intro_start, intro_end, filename=None, segment_type='intro'):
     if not player.isPlaying():
         return False
 
@@ -16,8 +16,16 @@ def execute_skip(player, intro_start, intro_end, filename=None):
     if target >= total_time:
         target = total_time - 10
 
-    xbmc.log('[IntroSkip] Skipping intro: {:.1f}s -> {:.1f}s (target {:.1f}s)'.format(
-        intro_start, intro_end, target), xbmc.LOGINFO)
+    segment_names = {
+        'intro': 'intro',
+        'recap': 'recap',
+        'credits': 'credits',
+        'preview': 'preview'
+    }
+    segment_name = segment_names.get(segment_type, 'intro')
+
+    xbmc.log('[IntroSkip] Skipping {}: {:.1f}s -> {:.1f}s (target {:.1f}s)'.format(
+        segment_name, intro_start, intro_end, target), xbmc.LOGINFO)
 
     player.seekTime(target)
     return True
