@@ -22,22 +22,22 @@
 </addon>
 <addon id="plugin.video.tidb"
        name="TheIntroDB Kodi Addon"
-       version="1.2.2"
+       version="1.2.3"
        provider-name="TheIntroDB">
     <requires>
         <import addon="xbmc.python" version="3.0.1"/>
     </requires>
     <extension point="xbmc.service" library="service.py" start="startup"/>
     <extension point="xbmc.addon.metadata">
-        <path>v1.2.2/plugin.video.tidb.zip</path>
-        <summary lang="en_GB">Skip TV intros using TheIntroDB</summary>
-        <description lang="en_GB">Looks up intro timings from TheIntroDB while you watch. Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
+        <path>v1.2.3/plugin.video.tidb.zip</path>
+        <summary lang="en_GB">Skip intro, recap, credits, and preview segments in Movies and TV Shows using TheIntroDB</summary>
+        <description lang="en_GB">Looks up segment timings from TheIntroDB while you watch, . Uses TMDB ids when present; otherwise IMDb ids (tt…) with season/episode.</description>
         <platform>all</platform>
         <license>GPL-2.0-or-later</license>
         <assets>
             <icon>resources/icon.png</icon>
         </assets>
-        <news lang="en_GB">v1.2.2 — Latest features and fixes. [See changelog](https://github.com/TheIntroDB/kodi-addon/releases/v1.2.2)</news>
+        <news lang="en_GB">v1.2.3 — Latest features and fixes. https://github.com/TheIntroDB/kodi-addon/releases/v1.2.3</news>
     </extension>
 </addon>
 </addons>
