@@ -54,3 +54,7 @@ msgstr ""
 msgctxt "#32011"
 msgid "Extra seconds to skip past segment end"
 msgstr ""
+
+msgctxt "#32012"
+msgid "Next Episode"
+msgstr ""

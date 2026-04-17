@@ -18,6 +18,7 @@ STR_SKIP_INTRO = 32001
 STR_SKIP_RECAP = 32003
 STR_SKIP_CREDITS = 32004
 STR_SKIP_PREVIEW = 32005
+STR_NEXT_EPISODE = 32012
 
 # must match overlay.xml window id
 OVERLAY_WINDOW_ID = 14000
@@ -67,7 +68,8 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
             'intro': ADDON.getLocalizedString(STR_SKIP_INTRO),
             'recap': ADDON.getLocalizedString(STR_SKIP_RECAP),
             'credits': ADDON.getLocalizedString(STR_SKIP_CREDITS),
-            'preview': ADDON.getLocalizedString(STR_SKIP_PREVIEW)
+            'preview': ADDON.getLocalizedString(STR_SKIP_PREVIEW),
+            'next_episode': ADDON.getLocalizedString(STR_NEXT_EPISODE)
         }
         base_text = segment_texts.get(segment_type, ADDON.getLocalizedString(STR_SKIP_INTRO))
         
