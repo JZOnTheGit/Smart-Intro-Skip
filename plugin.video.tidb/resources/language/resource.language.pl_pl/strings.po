@@ -54,3 +54,7 @@ msgstr "Automatyczne pomijanie segmentów (bez przycisku)"
 msgctxt "#32011"
 msgid "Extra seconds to skip past segment end"
 msgstr "Dodatkowe sekundy po końcu segmentu"
+
+msgctxt "#32012"
+msgid "Next Episode"
+msgstr "Kolejny odcinek"
