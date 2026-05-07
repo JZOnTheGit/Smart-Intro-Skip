@@ -44,7 +44,7 @@ class SubmitMarkOverlay(xbmcgui.WindowXMLDialog):
     def __new__(cls, xml_file: str, addon_path: str, skin: str, res: str,
                 label_text: str = '', player: Optional[xbmc.Player] = None,
                 monitor: Optional[xbmc.Monitor] = None) -> 'SubmitMarkOverlay':
-        return super(SubmitMarkOverlay, cls).__new__(cls, xml_file, addon_path, skin, res)
+        return super(SubmitMarkOverlay, cls).__new__(cls)
 
     def __init__(self, xml_file: str, addon_path: str, skin: str, res: str,
                  label_text: str = '', player: Optional[xbmc.Player] = None,
@@ -73,8 +73,8 @@ class SubmitMarkOverlay(xbmcgui.WindowXMLDialog):
         try:
             tex = _rounded_rect_texture_path()
             for img_id in (_BG_IMAGE_SHADOW, _BG_IMAGE_FILL):
-                ctl = self.getControl(img_id)  # type: xbmcgui.ControlImage
-                if ctl:
+                ctl = self.getControl(img_id)
+                if isinstance(ctl, xbmcgui.ControlImage):
                     # setFileName is more reliable across Kodi versions than setImage
                     try:
                         ctl.setFileName(tex)
@@ -89,8 +89,8 @@ class SubmitMarkOverlay(xbmcgui.WindowXMLDialog):
 
         # Set button label
         try:
-            button_control = self.getControl(BUTTON_ID)  # type: xbmcgui.ControlButton
-            if button_control:
+            button_control = self.getControl(BUTTON_ID)
+            if isinstance(button_control, xbmcgui.ControlButton):
                 button_control.setLabel(self._label_text)
         except Exception as e:
             xbmc.log('[TheIntroDB] Submit overlay set label: {}'.format(e), xbmc.LOGWARNING)

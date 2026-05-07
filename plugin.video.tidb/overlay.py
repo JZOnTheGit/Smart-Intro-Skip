@@ -46,7 +46,7 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
                 callback: Optional[Callable[[], None]] = None, intro_end: Optional[float] = None,
                 player: Optional[xbmc.Player] = None, monitor: Optional[xbmc.Monitor] = None,
                 segment_type: str = 'intro', segment_index: int = 0) -> 'SkipOverlay':
-        return super(SkipOverlay, cls).__new__(cls, xml_file, addon_path, skin, res)
+        return super(SkipOverlay, cls).__new__(cls)
 
     def __init__(self, xml_file: str, addon_path: str, skin: str, res: str,
                  callback: Optional[Callable[[], None]] = None, intro_end: Optional[float] = None,
@@ -100,7 +100,7 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
         try:
             button_text = self._get_segment_button_text(self._segment_type)
             button_control = self.getControl(BUTTON_ID)
-            if button_control:
+            if isinstance(button_control, xbmcgui.ControlButton):
                 button_control.setLabel(button_text)
         except Exception as e:
             xbmc.log('[TheIntroDB] Failed to set button text: {}'.format(e), xbmc.LOGWARNING)
@@ -163,7 +163,7 @@ class SkipOverlay(xbmcgui.WindowXMLDialog):
                 if self._display_deadline is not None and time.time() >= self._display_deadline:
                     self._close_from_bg_thread()
                     return
-                if pl and pl.isPlaying():
+                if pl and pl.isPlaying() and self._intro_end is not None:
                     current_time = pl.getTime()
                     if current_time >= self._intro_end:
                         self._close_from_bg_thread()

@@ -2,7 +2,7 @@
 import xbmc
 import xbmcaddon
 import xbmcgui
-from typing import List, Dict, Optional, Any, Tuple, Union
+from typing import List, Dict, Optional, Any, Tuple
 
 from player import TIDBPlayer
 import skipper
@@ -208,7 +208,7 @@ def _handle_next_episode(player: TIDBPlayer, monitor: xbmc.Monitor, session: Pla
     if monitor.abortRequested():
         return 'break'
 
-    segment_name = overlay_mod.ADDON.getLocalizedString(overlay_mod.STR_NEXT_EPISODE)
+    overlay_mod.ADDON.getLocalizedString(overlay_mod.STR_NEXT_EPISODE)
     xbmc.log('[TheIntroDB] Showing Next Episode for end-of-media {} segment'.format(segment_type),
              xbmc.LOGINFO)
 

@@ -3,7 +3,7 @@ import json
 import re
 import xbmc
 import xbmcaddon
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Optional, Dict, Any, Tuple
 
 ADDON = xbmcaddon.Addon()
 
