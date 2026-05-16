@@ -1,6 +1,7 @@
 import datetime
 import json
 import locale
+import os
 import platform
 import queue
 import random
@@ -10,11 +11,14 @@ from typing import Optional, Dict, Any, List, Tuple
 
 import xbmc
 import xbmcaddon
+import xbmcvfs
 
 ADDON = xbmcaddon.Addon()
 _ADDON_ID = ADDON.getAddonInfo('id')
 APTABASE_HOST = 'https://analytics.theintrodb.org'
 APTABASE_APP_KEY = 'A-SH-5507621118'
+SESSION_TIMEOUT_SECS = 3600.0
+PERSIST_INTERVAL_SECS = 30.0
 
 
 def _fresh_setting(key: str) -> str:
@@ -45,23 +49,86 @@ def _get_config() -> Tuple[bool, str, str]:
     return enabled, host, app_key
 
 
+def _state_file_path() -> str:
+    try:
+        profile = ADDON.getAddonInfo('profile') or ''
+        profile = xbmcvfs.translatePath(profile)
+        if profile:
+            xbmcvfs.mkdirs(profile)
+            return os.path.join(profile, 'aptabase_state.json')
+    except Exception:
+        return ''
+    return ''
+
+
+def _read_json(path: str) -> Dict[str, Any]:
+    if not path:
+        return {}
+    try:
+        if not xbmcvfs.exists(path):
+            return {}
+        f = xbmcvfs.File(path)
+        try:
+            raw = f.read()
+        finally:
+            f.close()
+        if not raw:
+            return {}
+        return json.loads(raw)
+    except Exception:
+        return {}
+
+
+def _write_json(path: str, data: Dict[str, Any]) -> None:
+    if not path:
+        return
+    try:
+        raw = json.dumps(data, separators=(',', ':'))
+        f = xbmcvfs.File(path, 'w')
+        try:
+            f.write(raw)
+        finally:
+            f.close()
+    except Exception:
+        return
+
+
 class AptabaseReporter:
     def __init__(self) -> None:
         self._q: "queue.Queue[Dict[str, Any]]" = queue.Queue()
         self._stop = threading.Event()
-        self._session_id = _new_session_id()
-        self._session_started_at = time.time()
+        self._state_path = _state_file_path()
+        self._state: Dict[str, Any] = _read_json(self._state_path)
+        now = time.time()
+        persisted_session_id = str(self._state.get('session_id') or '')
+        persisted_last_touch = float(self._state.get('last_touch_ts') or 0.0)
+        if persisted_session_id and persisted_last_touch and (now - persisted_last_touch) <= SESSION_TIMEOUT_SECS:
+            self._session_id = persisted_session_id
+            self._last_touch_ts = persisted_last_touch
+        else:
+            self._session_id = _new_session_id()
+            self._last_touch_ts = 0.0
+        self._start_sent_for_session = str(self._state.get('start_sent_session_id') or '') == self._session_id
+        self._last_persist_ts = 0.0
         self._thread = threading.Thread(target=self._worker, name='tidb-aptabase', daemon=True)
         self._thread.start()
         if _fresh_bool('debug_logging'):
             enabled, host, app_key = _get_config()
             safe_key = app_key[-6:] if app_key else ''
-            xbmc.log('[TheIntroDB] Aptabase init enabled={} host={} key=*{}'.format(enabled, host, safe_key), xbmc.LOGINFO)
+            xbmc.log('[TheIntroDB] Aptabase init enabled={} host={} key=*{} session=*{}'.format(enabled, host, safe_key, self._session_id[-6:]), xbmc.LOGINFO)
 
     def track(self, event_name: str, props: Optional[Dict[str, Any]] = None) -> None:
         enabled, host, app_key = _get_config()
         if not enabled or not host or not app_key or not event_name:
             return
+        now = time.time()
+        if self._last_touch_ts and (now - self._last_touch_ts) > SESSION_TIMEOUT_SECS:
+            self._session_id = _new_session_id()
+            self._start_sent_for_session = False
+
+        if event_name == 'service_started' and self._start_sent_for_session:
+            return
+
         clean_props: Dict[str, Any] = {}
         if isinstance(props, dict):
             for k, v in props.items():
@@ -69,9 +136,23 @@ class AptabaseReporter:
                     clean_props[str(k)] = v
                 else:
                     clean_props[str(k)] = str(v)
+
+        if event_name == 'service_started':
+            self._start_sent_for_session = True
+            self._state['start_sent_session_id'] = self._session_id
+            self._state['last_service_started_ts'] = now
+
+        self._last_touch_ts = now
+        self._state['session_id'] = self._session_id
+        self._state['last_touch_ts'] = self._last_touch_ts
+        if (now - self._last_persist_ts) >= PERSIST_INTERVAL_SECS or event_name == 'service_started':
+            _write_json(self._state_path, self._state)
+            self._last_persist_ts = now
+
         try:
             self._q.put_nowait({
                 'eventName': event_name,
+                'sessionId': self._session_id,
                 'props': clean_props,
             })
         except Exception:
@@ -88,6 +169,15 @@ class AptabaseReporter:
         self._stop.set()
         try:
             self._thread.join(timeout=max(0.0, float(timeout)))
+        except Exception:
+            pass
+        try:
+            now = time.time()
+            self._state['session_id'] = self._session_id
+            self._state['last_touch_ts'] = self._last_touch_ts
+            if (now - self._last_persist_ts) >= 0.5:
+                _write_json(self._state_path, self._state)
+                self._last_persist_ts = now
         except Exception:
             pass
 
@@ -110,11 +200,6 @@ class AptabaseReporter:
             'appVersion': app_version,
             'sdkVersion': 'kodi-addon@1',
         }
-
-    def _ensure_session(self) -> None:
-        if time.time() - self._session_started_at > 3600:
-            self._session_id = _new_session_id()
-            self._session_started_at = time.time()
 
     def _worker(self) -> None:
         buf: List[Dict[str, Any]] = []
@@ -151,13 +236,12 @@ class AptabaseReporter:
         if not enabled or not host or not app_key or not items:
             return
 
-        self._ensure_session()
         payload = []
         sys_props = self._system_props()
         for item in items:
             payload.append({
                 'timestamp': _utc_iso(),
-                'sessionId': self._session_id,
+                'sessionId': item.get('sessionId') or self._session_id,
                 'eventName': item.get('eventName'),
                 'systemProps': sys_props,
                 'props': item.get('props') or {},
